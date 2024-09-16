@@ -4,10 +4,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class PlayerController : MonoBehaviour
+public class TransformMovementPhysics : MonoBehaviour
 {
     [Header("General Setup Settings")]
+    // A serialized input action that defines the controls for player movement 
+    // (likely using a controller or keyboard). 
+    // The action is tied to the Unity Input System.
     [SerializeField] private InputAction movement;
+    // Controls the speed at which the player moves.
     [Tooltip("How fast player moves up and down based upon player input")][SerializeField] float controlSpeed = 30f;
     [Tooltip("How far player moves horizontally")][SerializeField] float xRange = 10f;
     [Tooltip("How far player moves vertically")][SerializeField] float zRange = 10f;
@@ -19,14 +23,18 @@ public class PlayerController : MonoBehaviour
     [Header("Player input based tuning")]
     [SerializeField] float controlPitchFactor = 10f;
     [SerializeField] float controlRollFactor = -20f;
+
+    Read input from the movement action. These values represent the player's intended movement along the X and Z axes.
     float xThrow;
     float zThrow;
 
+    // These methods enable and disable the input actions when the object becomes active or inactive:
+    // Activates the input action when the script is enabled.
     private void OnEnable()
     {
         movement.Enable();
     }
-
+    // Deactivates the input action when the script is disabled 
     private void OnDisable()
     {
         movement.Disable();
