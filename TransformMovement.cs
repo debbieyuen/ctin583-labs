@@ -2,29 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour
+public class TransformMovement : MonoBehaviour
 {
+    void Update() {
+        // Move the object forward along its z axis 1 unit/second
+        transform.Translate(Vector3.forward * Time.deltaTime);
 
-    [SerializeField] CharacterController characterController;
-    [SerializeField] float speed = 10.0f;
-    [SerializeField] Vector3 movement;
+        // Move the object upward in world space 1 unit/second
+        transform.Translate(Vector3.up * Time.deltaTime, Space.World);
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        characterController = GetComponent<CharacterController>();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        movement = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        movePlayer(movement);
-    }
-
-    void movePlayer(Vector3 direction)
-    {
-        characterController.Move(movement * Time.deltaTime * speed);
-    }
-
 }
