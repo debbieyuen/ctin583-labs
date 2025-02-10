@@ -1,0 +1,79 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+
+public class TransformMovementPhysics : MonoBehaviour
+{
+    [Header("General Setup Settings")]
+    // A serialized input action that defines the controls for player movement 
+    // (likely using a controller or keyboard). 
+    // The action is tied to the Unity Input System.
+    [SerializeField] private InputAction movement;
+    // Controls the speed at which the player moves.
+    [Tooltip("How fast player moves up and down based upon player input")][SerializeField] float controlSpeed = 30f;
+    [Tooltip("How far player moves horizontally")][SerializeField] float xRange = 10f;
+    [Tooltip("How far player moves vertically")][SerializeField] float zRange = 10f;
+
+    [Header("Screen position based tuning")]
+    [SerializeField] float positionPitchFactor = -2f;
+    [SerializeField] float positionYawFactor = 2f;
+
+    [Header("Player input based tuning")]
+    [SerializeField] float controlPitchFactor = 10f;
+    [SerializeField] float controlRollFactor = -20f;
+
+    // Read input from the movement action. These values represent the player's intended movement along the X and Z axes.
+    float xThrow;
+    float zThrow;
+
+    // These methods enable and disable the input actions when the object becomes active or inactive:
+    // Activates the input action when the script is enabled.
+    private void OnEnable()
+    {
+        movement.Enable();
+    }
+    // Deactivates the input action when the script is disabled 
+    private void OnDisable()
+    {
+        movement.Disable();
+    }
+
+    void Update()
+    {
+        ProcessTranslation();
+        ProcessRotation();
+    }
+
+    private void ProcessRotation()
+    {
+        // Calculate the player's pitch, yaw, and roll
+        float pitchDueToPosition = transform.localPosition.z * positionPitchFactor;
+        float pitchDueToControlThrow = zThrow * controlPitchFactor;
+        float pitch = pitchDueToPosition + pitchDueToControlThrow;
+
+        float yaw = transform.localPosition.x * positionYawFactor;
+
+    }
+
+    private void ProcessTranslation()
+    {
+        // Read the player input
+        xThrow = movement.ReadValue<Vector2>().x;
+        zThrow = movement.ReadValue<Vector2>().y;
+
+        // Calculate the player's position
+        float xOffset = xThrow * Time.deltaTime * controlSpeed;
+        float zOffset = zThrow * Time.deltaTime * controlSpeed;
+        float rawXPos = transform.localPosition.x + xOffset;
+        float rawZPos = transform.localPosition.z + zOffset;
+
+        // Limit the player's position
+        float clampedXPos = Mathf.Clamp(rawXPos, -xRange, xRange);
+        float clampedZPos = Mathf.Clamp(rawZPos, -zRange, zRange);
+
+        // Update the player's position
+        transform.localPosition = new Vector3(clampedXPos, transform.localPosition.y, clampedZPos);
+    }
+}
